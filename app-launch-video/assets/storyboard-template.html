@@ -1,0 +1,98 @@
+<title>Launch Film Storyboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: apple.com-style light page. Every frame is a true 1920×1080 stage scaled to fit; components are built at
+   point sizes and zoomed as one unit. A QA engine checks every frame on load. Replace SHOTS and the component
+   functions with the real app's; keep the stage, the QA and the shot fields. */
+:root{--page:#FBFBFD;--ink:#1D1D1F;--ink2:#6E6E73;--ink3:#86868B;--rule:#E5E5EA;--accent:#168A2D;--warn:#B7791F;--bad:#C2413B;--blue:#0071E3;color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:Inter,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:64px 96px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:64px}
+header{display:grid;gap:14px;justify-items:center;text-align:center}
+.eyebrow{font-size:13px;font-weight:600;color:var(--ink3)}
+h1{font-size:clamp(34px,6vw,64px);font-weight:700;letter-spacing:-.045em;line-height:1.04;margin:0;text-wrap:balance}
+.lede{color:var(--ink2);font-size:18px;line-height:1.45;max-width:60ch;margin:0}
+.qasum{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;font-size:14px;color:var(--ink2);border:1px solid var(--rule);border-radius:16px;padding:14px 18px;background:#fff}
+.ok{color:var(--accent)}.wn{color:var(--warn)}.er{color:var(--bad)}
+.act{display:grid;gap:6px;border-top:1px solid var(--rule);padding-top:24px}
+.act small{font-size:13px;font-weight:600;color:var(--ink3)}.act h2{font-size:30px;letter-spacing:-.03em;margin:0}
+.board{display:grid;gap:48px 28px;grid-template-columns:repeat(auto-fill,minmax(min(100%,540px),1fr))}
+.shot{display:grid;gap:10px;align-content:start;min-width:0}
+.hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.no{font-size:13px;font-weight:600;color:var(--ink3)}
+.hd h3{font-size:17px;margin:0}.tc{margin-left:auto;font-size:13px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.tag{font-size:11px;font-weight:600;color:var(--blue);border:1px solid #cfe3fb;background:#f2f8ff;border-radius:999px;padding:2px 8px}
+.f{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.dl{display:grid;grid-template-columns:84px 1fr;gap:4px 14px;font-size:13.5px;line-height:1.5;margin:0}.dl dt{color:var(--ink3)}.dl dd{margin:0;color:var(--ink2)}
+.qa ul{margin:4px 0 0;padding-left:18px}
+/* stage */
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:radial-gradient(1100px 700px at 50% 46%,#fff 0%,#F7F7F9 45%,#ECECEF 100%);color:#1D1D1F;font-family:Inter,system-ui,sans-serif}
+.stage.dark{background:radial-gradient(1100px 700px at 50% 46%,#1C1C1F 0%,#0B0B0D 60%,#050506 100%);color:#F5F5F7}
+.stage.black{background:#000}
+.ctr{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.line{position:absolute;left:0;right:0;text-align:center;font-weight:700;letter-spacing:-.04em}
+.line.sub{font-weight:500;color:#6E6E73;letter-spacing:-.01em}.dark .line.sub{color:#A1A1A6}
+.line.eb{font-weight:600;letter-spacing:.14em;color:var(--accent)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Storyboard v1 · 16:9 · <span id="count"></span> frames</div>
+  <h1>Your one-line promise.</h1>
+  <p class="lede">One paragraph: the problem it opens on, the answer, the launch moment, what's coming next. Length, formats, sound approach.</p>
+</header>
+<div class="qasum" id="qasum">Running QA…</div>
+<div id="acts"></div>
+<pre id="qa-json" hidden></pre>
+</div>
+
+<script>
+/* ---------- components (REPLACE with the app's real ones, at point sizes) ---------- */
+const ctr=(html,z=1,dy=0)=>`<div class="ctr" data-hero style="top:calc(50% + ${dy}px)"><div style="zoom:${z}">${html}</div></div>`;
+const line=(t,y,size=64,cls='')=>`<div class="line ${cls}" style="top:${y}px;font-size:${size}px">${t}</div>`;
+const icon=s=>`<div style="width:${s}px;height:${s}px;border-radius:22.37%;background:#fff;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.1)"><div style="width:56%;height:56%;border-radius:50%;background:linear-gradient(135deg,#17B880,#007A43)"></div></div>`;
+const card=(title,rows)=>`<div style="width:362px;background:#fff;border:1px solid #86BC8D;border-radius:22px;padding:18px;display:grid;gap:14px;text-align:left"><div style="font-size:22px;font-weight:800;letter-spacing:-.5px">${title}</div>${rows.map(r=>`<div style="display:flex;gap:10px;align-items:center;font-size:15px;font-weight:600"><span style="width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1.6px #6B7280"></span>${r}</div>`).join('')}</div>`;
+const notif=(t,b)=>`<div style="width:360px;border-radius:22px;padding:12px 14px;display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:center;background:rgba(255,255,255,.92);box-shadow:0 10px 30px rgba(0,0,0,.1);text-align:left"><div style="width:38px;height:38px;border-radius:9px;background:#0A84FF"></div><div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:15px">${b}</div></div></div>`;
+const badge=()=>`<div style="display:inline-flex;white-space:nowrap;width:max-content;background:#000;color:#fff;border-radius:11px;padding:7px 16px;box-shadow:inset 0 0 0 1px #A6A6A6;text-align:left"><div><small style="display:block;font-size:11px;line-height:1.3">Download on the</small><b style="display:block;font-size:19px;font-weight:600;line-height:1.2">App Store</b></div></div>`;
+
+/* ---------- shot list ---------- */
+const ACTS=[['Act one · 0:00','The problem',0,3],['Act two · 0:08','The answer',3,5],['Act three · 0:13','Proof and launch',5,8],['Act four · 0:25','Coming soon',8,10]];
+const S=[
+ {t:'0:00',d:'1.0',title:'Black',cls:'black',s:'',cam:'Locked',m:'One beat of black.',x:['cut','Hard cut in'],a:'Room tone.'},
+ {t:'0:01',d:'3.5',title:'The alerts arrive',s:ctr(notif('Inbox','23 unread messages'),2.2,40)+line('Your phone gets the first five minutes.',300,48),cam:'Slow push 1.04',m:'Generic notifications drop into a stack (island spring); headline rises word by word.',x:['morph','Drop + stack'],a:'Tuned glass pings, climbing.'},
+ {t:'0:05',d:'2.4',title:'The question',s:line('What if they were yours again?',512,64),cam:'Locked',m:'Swipe clears the stack; the question rises at center.',x:['morph','Swipe + mask rise'],a:'Cloth swipe; type plucks.'},
+ {t:'0:08',d:'1.0',title:'In-between: outline draws',mid:1,s:ctr(`<div style="width:200px;height:200px;border-radius:50%;box-shadow:inset 0 0 0 3px #17B880"></div>`),cam:'Push 1.05',m:'The mark’s outline draws itself.',x:['morph','Stroke draw'],a:'Pencil; reversed swell before.'},
+ {t:'0:09',d:'3.8',title:'Brand',s:ctr(`<div style="display:grid;justify-items:center;gap:22px">${icon(150)}<div style="font-size:64px;font-weight:700;letter-spacing:-.04em">Brand</div><div style="font-size:28px;color:#6E6E73">Your tagline goes here.</div></div>`),cam:'Locked',m:'Fill rises; icon grows around it; name rises letter by letter.',x:['morph','Fill + icon grow'],a:'Brand chord over a soft sub.'},
+ {t:'0:13',d:'2.6',title:'First feature',s:ctr(card('2 of 3 done',['Morning walk','Read 10 pages','Call home']),2.6)+line('Show the first real feature.',170,40,'sub'),cam:'Locked',m:'Icon morphs into the card; rows rise in order; the third check draws (bouncy).',x:['morph','Icon → card'],a:'Tap + pluck on the check.'},
+ {t:'0:18',d:'3.2',title:'GET → OPEN',s:ctr(`<div style="width:416px;height:100px;background:#fff;border-radius:28px;display:grid;place-items:center"><div style="width:380px;display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;text-align:left">${icon(64)}<div><b style="font-size:17px">Brand</b><div style="font-size:13px;color:#6E6E73">Your App Subtitle</div></div><span style="background:rgba(120,120,128,.14);color:#007AFF;font-weight:700;border-radius:15px;padding:6px 18px">GET</span></div></div>`,2.6),cam:'Gentle close-up ≤1.15',m:'Press squash → ring fills → OPEN.',x:['morph','Pill → ring → pill'],a:'Tap, rising tone, confirm.'},
+ {t:'0:21',d:'3.0',title:'Now on the App Store',s:ctr(`<div style="display:grid;justify-items:center;gap:30px">${icon(150)}<div style="font-size:64px;font-weight:700;letter-spacing:-.04em">Brand. Now on the App Store.</div><div style="zoom:2">${badge()}</div></div>`),cam:'Slow push',m:'Row icon flies into the big icon; OPEN grows into the official badge.',x:['morph','Shared elements'],a:'Air + pluck.'},
+ {t:'0:25',d:'2.4',title:'Chapter title',cls:'dark',s:line('COMING SOON',415,22,'eb')+line('Next Feature.',480,96)+line('One sentence about why it matters.',610,36,'sub'),cam:'Locked',m:'Hard cut to dark on an empty frame; title rises.',x:['cut','Hard cut'],a:'Sub thump; plucks.'},
+ {t:'0:27',d:'2.4',title:'The feature, labelled',cls:'dark',s:line('ON THE LOCK SCREEN',280,22,'eb')+ctr(`<div style="width:370px;height:129px;border-radius:24px;background:#F3EBD8;color:#2A2418;padding:14px;text-align:left"><b style="color:#168A2D;font-size:13px">Focus session</b><div style="font-family:Georgia;font-style:italic;font-size:19px;margin-top:8px">“One thing at a time.”</div></div>`,2.4,60),cam:'Slow push',m:'Surface rises from below; only the timer moves inside.',x:['morph','Rise in'],a:'Paper slide.'},
+];
+
+/* ---------- render + QA ---------- */
+document.getElementById('count').textContent=S.length;
+document.getElementById('acts').innerHTML=ACTS.map(([sm,h,a,b])=>`<div class="act"><small>${sm}</small><h2>${h}</h2></div><section class="board" style="margin-top:28px">${S.slice(a,b).map((f,k)=>{const i=a+k;return `<article class="shot" data-i="${i}"><div class="hd"><span class="no">${String(i+1).padStart(2,'0')}</span><h3>${f.title}</h3>${f.mid?'<span class="tag">In-between</span>':''}<span class="tc">${f.t} · ${f.d} s</span></div><div class="f"><div class="stage ${f.cls||''}">${f.s}</div></div><dl class="dl"><dt>Camera</dt><dd>${f.cam}</dd><dt>Motion</dt><dd>${f.m}</dd><dt>Transition</dt><dd>${f.x[1]}</dd><dt>Sound</dt><dd>${f.a}</dd><dt>QA</dt><dd class="qa" id="qa${i}">…</dd></dl></article>`}).join('')}</section>`).join('');
+function fit(){document.querySelectorAll('.f').forEach(f=>{f.firstElementChild.style.transform=`scale(${f.clientWidth/1920})`})}
+fit();try{new ResizeObserver(fit).observe(document.body)}catch(e){addEventListener('resize',fit)}
+function runQA(){const all=[],tot={err:0,warn:0};
+ document.querySelectorAll('.shot').forEach(shot=>{const i=+shot.dataset.i,f=S[i],st=shot.querySelector('.stage'),sr=st.getBoundingClientRect(),k=sr.width/1920;
+  const R=r=>({x:(r.left-sr.left)/k,y:(r.top-sr.top)/k,w:r.width/k,h:r.height/k});const issues=[],leaves=[];
+  const tw=document.createTreeWalker(st,NodeFilter.SHOW_TEXT);let n;
+  while(n=tw.nextNode()){if(!n.textContent.trim()||n.parentElement.closest('svg'))continue;const rg=document.createRange();rg.selectNodeContents(n);const rs=[...rg.getClientRects()].filter(r=>r.width>0);if(!rs.length)continue;
+   const x1=Math.min(...rs.map(r=>r.left)),y1=Math.min(...rs.map(r=>r.top)),x2=Math.max(...rs.map(r=>r.right)),y2=Math.max(...rs.map(r=>r.bottom));
+   leaves.push({el:n.parentElement,name:'“'+n.textContent.trim().slice(0,22)+'”',r:R({left:x1,top:y1,width:x2-x1,height:y2-y1})})}
+  st.querySelectorAll('svg:not(svg svg)').forEach(s=>{const b=s.getBoundingClientRect();if(b.width>2)leaves.push({el:s,name:'art',r:R(b),art:1})});
+  const ov=(a,b)=>Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x)>1&&Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y)>1;
+  if(!f.mid)for(let a=0;a<leaves.length;a++)for(let b=a+1;b<leaves.length;b++){const A=leaves[a],B=leaves[b];if(A.el.contains(B.el)||B.el.contains(A.el)||(A.art&&B.art))continue;if(ov(A.r,B.r))issues.push(['err',`Overlap: ${A.name} × ${B.name}`])}
+  if(!f.mid)st.querySelectorAll('*').forEach(el=>{const cs=getComputedStyle(el);if(cs.overflow==='hidden'&&el.textContent.trim()&&(el.scrollHeight>el.clientHeight+2||el.scrollWidth>el.clientWidth+2))issues.push(['err',`Clipped text: “${el.textContent.trim().slice(0,26)}”`])});
+  leaves.forEach(L=>{const r=L.r;if(r.x<-1||r.y<-1||r.x+r.w>1921||r.y+r.h>1081)issues.push(['err',`Out of frame: ${L.name}`]);else if(r.x<96||r.y<54||r.x+r.w>1824||r.y+r.h>1026)issues.push(['warn',`Outside title-safe: ${L.name}`]);
+   if(!L.art){let z=1;for(let a=L.el;a&&a!==st;a=a.parentElement)z*=parseFloat(getComputedStyle(a).zoom)||1;const px=parseFloat(getComputedStyle(L.el).fontSize)*z;if(px<20)issues.push(['warn',`Small type ${px.toFixed(0)} px: ${L.name}`])}});
+  const h=st.querySelector('[data-hero]');if(h){const r=R(h.getBoundingClientRect());const dx=r.x+r.w/2-960;if(Math.abs(dx)>19.2)issues.push(['warn',`Hero off-center x ${dx.toFixed(0)} px`])}
+  const seen=new Set(),u=issues.filter(q=>!seen.has(q[1])&&seen.add(q[1]));u.forEach(q=>tot[q[0]==='err'?'err':'warn']++);
+  document.getElementById('qa'+i).innerHTML=u.length?`<span class="${u.some(q=>q[0]==='err')?'er':'wn'}">${u.length} issue(s)</span><ul>${u.map(q=>`<li class="${q[0]==='err'?'er':'wn'}">${q[1]}</li>`).join('')}</ul>`:`<span class="ok">Pass</span> · ${leaves.length} elements checked`;
+  all.push({i:i+1,issues:u})});
+ document.getElementById('qasum').innerHTML=`<b>QA</b><span>${S.length} frames</span><span class="${tot.err?'er':'ok'}">${tot.err} errors</span><span class="${tot.warn?'wn':'ok'}">${tot.warn} warnings</span><span>overlap · clipping · bounds · title-safe · min type 20 px · center</span>`;
+ document.getElementById('qa-json').textContent=JSON.stringify(all.filter(a=>a.issues.length))}
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>setTimeout(runQA,50));
+</script>

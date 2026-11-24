@@ -1,0 +1,19 @@
+{
+  "name": "app-launch-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.js",
+    "cues": "node src/export-cues.js",
+    "preview": "remotion render src/index.js Film16x9 out/preview.mp4 --scale=0.5 --codec=h264",
+    "audio": "npm run cues && python3 audio.py hrtf/kemar.sofa",
+    "deliver": "bash ../scripts/deliver.sh"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.546",
+    "@remotion/google-fonts": "4.0.546",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.546"
+  }
+}

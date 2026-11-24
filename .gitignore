@@ -1,0 +1,7 @@
+node_modules/
+out/
+hrtf/
+*.sofa
+sfx/kenney/*.ogg
+.DS_Store
+__pycache__/

@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  skill:
+    name: Skill structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate SKILL.md frontmatter
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          s = open('app-launch-video/SKILL.md').read()
+          m = re.match(r'^---\n(.*?)\n---\n', s, re.S)
+          assert m, 'missing frontmatter'
+          fm = m.group(1)
+          for key in ('name:', 'description:'):
+              assert key in fm, f'missing {key}'
+          lines = s.count('\n')
+          assert lines < 500, f'SKILL.md is {lines} lines (keep < 500)'
+          print('SKILL.md ok,', lines, 'lines')
+          PY
+      - name: Referenced files exist
+        run: |
+          for f in $(grep -oE 'references/[a-z]+\.md' app-launch-video/SKILL.md | sort -u); do test -f "app-launch-video/$f" || { echo "missing $f"; exit 1; }; done
+
+  template:
+    name: Template bundles and renders audio
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app-launch-video/template
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: npm install --no-audit --no-fund
+      - name: Bundle check
+        run: npx --yes esbuild@0.24.0 src/index.js --bundle --loader:.js=jsx --jsx=automatic --platform=browser --outfile=out/bundle-check.js --log-level=warning
+      - name: Export cues
+        run: node src/export-cues.js
+      - name: Render soundtrack (pan fallback, synthesized SFX)
+        run: |
+          pip install numpy scipy pillow h5py
+          python3 audio.py
+          test -s out/audio.wav
+
+  scripts:
+    name: Scripts lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m py_compile app-launch-video/scripts/*.py app-launch-video/scripts/qa/*.py app-launch-video/template/audio.py
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck && shellcheck app-launch-video/scripts/*.sh
